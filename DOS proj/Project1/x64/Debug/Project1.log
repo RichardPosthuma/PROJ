@@ -1,0 +1,22 @@
+﻿  Source.c
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(399,44): warning C4047: '=': 'card *' differs in levels of indirection from 'card **'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(410,47): warning C4047: 'function': 'card **' differs in levels of indirection from 'card *'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(410,41): warning C4024: 'remove_card': different types for formal and actual parameter 1
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(414,44): warning C4047: '=': 'card *' differs in levels of indirection from 'card **'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(418,51): warning C4047: 'function': 'card **' differs in levels of indirection from 'card *'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(418,45): warning C4024: 'remove_card': different types for formal and actual parameter 1
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(427,51): warning C4047: 'function': 'card **' differs in levels of indirection from 'card *'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(427,45): warning C4024: 'remove_card': different types for formal and actual parameter 1
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(469,44): warning C4047: '=': 'card *' differs in levels of indirection from 'card **'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(481,51): warning C4047: 'function': 'card **' differs in levels of indirection from 'card *'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(481,45): warning C4024: 'remove_card': different types for formal and actual parameter 1
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(486,51): warning C4047: 'function': 'card **' differs in levels of indirection from 'card *'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(486,45): warning C4024: 'remove_card': different types for formal and actual parameter 1
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(493,44): warning C4047: '=': 'card *' differs in levels of indirection from 'card **'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(503,51): warning C4047: 'function': 'card **' differs in levels of indirection from 'card *'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(503,45): warning C4024: 'remove_card': different types for formal and actual parameter 1
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(506,51): warning C4047: 'function': 'card **' differs in levels of indirection from 'card *'
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(506,45): warning C4024: 'remove_card': different types for formal and actual parameter 1
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(321,13): warning C4101: 'x': unreferenced local variable
+C:\Users\Echo\source\repos\Project1\Project1\Source.c(545,56): warning C4133: '=': incompatible types - from 'card *' to 'card_s *'
+  Project1.vcxproj -> C:\Users\Echo\source\repos\Project1\x64\Debug\Project1.exe
