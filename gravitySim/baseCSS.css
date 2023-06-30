@@ -1,0 +1,34 @@
+body {
+    overflow: hidden;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.stage{
+    height: 100vh;
+
+
+
+}
+
+
+
+.topEditor{
+    background-color: lightgray;
+    float: left;
+    width: 100%;
+
+
+
+}
+
+.create-button{
+    float: left;
+}
+
+
+
