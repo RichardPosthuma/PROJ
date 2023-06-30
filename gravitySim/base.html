@@ -1,0 +1,275 @@
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="baseCSS.css" />
+        <title>Gravity Simulator</title>
+    </head>
+    <body style="background-color: black;">
+    <div class="topEditor">
+        Body Editor
+        <br>
+        Size
+        <input type="range" min="1" max="100" class="size" id="size-slider">
+        Mass (In solar masses)<input type="range" min="1" max="1000" class="mass" id="mass-slider">
+        Initial Velocity - X <input type="range" min="0" max="10" id="init-vel-x-slider">
+        Initial Velocity - Y <input type="range" min="0" max="10" id="init-vel-y-slider">
+        Initial Velocity - Z <input type="range" min="0" max="10" id="init-vel-z-slider">
+        <input type="text" id="x-pos" placeholder="x-position">
+        <input type="text" id="y-pos" placeholder="y-position">
+        <input type="text" id="z-pos" placeholder="z-position">
+        Red <input type="range" min="0" max="255" id="red-slider">
+        Green <input type="range" min="0" max="255" id="green-slider">
+        Blue <input type="range" min="0" max="255" id="blue-slider">
+        <br>
+        Simulation Speed <input type="range" min="1" max="100" value="50" class="simulation-speed" id="simulation-speed-slider">
+        <br>
+        <button id="create-button" class="create-button" onclick='addBody()'>Create new body</button>
+    </div>
+    <canvas id="stage" class="stage"></canvas>
+    
+    <script src="https://threejs.org/build/three.js"></script>
+    <script>
+        bodies = [];
+        class CelestialBody {
+            constructor(size, color, mass, position, velocity) {
+                this.size = size;
+                this.mass = mass;
+                this.color = color;
+                this.velocity = velocity;
+                this.geometry = new THREE.SphereGeometry(this.size, 32, 16);
+                this.material = new THREE.MeshBasicMaterial({ color: color });
+                this.mesh = new THREE.Mesh(this.geometry, this.material);
+                this.mesh.position.set(position[0], position[1], position[2]);
+                console.log("Body constructed: ", this);
+            }
+        
+            addToScene(scene) {
+                scene.add(this.mesh);
+                console.log("Body added to scene: ", this);
+            }
+        
+            removeFromScene(scene) {
+                scene.remove(this.mesh);
+            }
+        
+            updateSize(newSize) {
+                this.size = newSize;
+                this.geometry.scale(newSize, newSize, newSize);
+            }
+        }
+        
+        function getSimulationSpeed() {
+            var speed = document.getElementById("simulation-speed-slider").value;
+            // We divide by 1000 to get a smaller dt value, since the range of the slider is 1-100
+            return speed / 1000;
+        }
+
+        function toRadians(angle) {
+            return angle * (Math.PI / 180);
+        }
+        
+        var canvas = document.getElementById("stage");
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        var isDragging = false;
+        var previousMousePosition = {
+            x: 0,
+            y: 0
+        };
+    
+        // Event listeners for mouse movements
+        canvas.addEventListener("mousedown", function (event) {
+            isDragging = true;
+        });
+    
+        canvas.addEventListener("mousemove", function (event) {
+            if (isDragging) {
+                var deltaMove = {
+                    x: event.offsetX - previousMousePosition.x,
+                    y: event.offsetY - previousMousePosition.y
+                };
+    
+                var deltaRotationQuaternion = new THREE.Quaternion()
+                    .setFromEuler(new THREE.Euler(
+                        toRadians(deltaMove.y * 1),
+                        toRadians(deltaMove.x * 1),
+                        0,
+                        'XYZ'
+                    ));
+    
+                camera.quaternion.multiplyQuaternions(deltaRotationQuaternion, camera.quaternion);
+                camera.position.applyQuaternion(deltaRotationQuaternion);
+                camera.lookAt(scene.position);
+    
+                previousMousePosition = {
+                    x: event.offsetX,
+                    y: event.offsetY
+                };
+            }
+        });
+    
+        canvas.addEventListener("mouseup", function (event) {
+            isDragging = false;
+        });
+        var renderer = new THREE.WebGLRenderer({ canvas: canvas });
+        var createButton = document.getElementById("create-button");
+    
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        document.body.appendChild(renderer.domElement);
+        camera.position.z = 500;
+    
+        function getColorFromSliders() {
+            var red = document.getElementById("red-slider").value / 255;
+            var green = document.getElementById("green-slider").value / 255;
+            var blue = document.getElementById("blue-slider").value / 255;
+            return new THREE.Color(red, green, blue);
+        }
+    
+        function addBody() {
+            var size = parseFloat(document.getElementById("size-slider").value);
+            var color = getColorFromSliders();
+            var mass = parseFloat(document.getElementById("mass-slider").value);
+            var velocityX = parseFloat(document.getElementById("init-vel-x-slider").value);
+            var velocityY = parseFloat(document.getElementById("init-vel-y-slider").value);
+            var velocityZ = parseFloat(document.getElementById("init-vel-z-slider").value);
+            var velocity = [velocityX, velocityY, velocityZ];
+            var xPos = parseFloat(document.getElementById("x-pos").value);
+            var yPos = parseFloat(document.getElementById("y-pos").value);
+            var zPos = parseFloat(document.getElementById("z-pos").value);
+            var position = [xPos, yPos, zPos];
+        
+            console.log(`Size: ${size}, xPos: ${xPos}, yPos: ${yPos}, zPos: ${zPos}`);
+    
+            var newBody = new CelestialBody(size, color, mass, position, velocity);
+            newBody.addToScene(scene);
+            bodies.push(newBody);
+        }
+    
+        function createStar() {
+            const geometry = new THREE.SphereGeometry(0.25, 24, 24);
+            const material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+            const star = new THREE.Mesh(geometry, material);
+        
+            const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(1000));
+        
+            star.position.set(x, y, z);
+            scene.add(star);
+        }
+    
+        Array(1000).fill().forEach(createStar);
+    
+        function calculateGravitationalForce(body1, body2) {
+            const G = 6.67430e-11;
+            let distance = Math.sqrt(
+                Math.pow(body1.mesh.position.x - body2.mesh.position.x, 2) +
+                Math.pow(body1.mesh.position.y - body2.mesh.position.y, 2) +
+                Math.pow(body1.mesh.position.z - body2.mesh.position.z, 2)
+            );
+            let forceMagnitude = G * body1.mass * body2.mass / Math.pow(distance, 2);
+            let forceDirection = {
+                x: (body2.mesh.position.x - body1.mesh.position.x) / distance,
+                y: (body2.mesh.position.y - body1.mesh.position.y) / distance,
+                z: (body2.mesh.position.z - body1.mesh.position.z) / distance
+            };
+            return {
+                x: forceMagnitude * forceDirection.x,
+                y: forceMagnitude * forceDirection.y,
+                z: forceMagnitude * forceDirection.z
+            };
+        }
+    
+        function calculateNetForce(body, bodyArray){
+            var netForce = {x:0, y:0, z:0};
+    
+            for (let i = 0; i < bodyArray.length; i++) {
+                if (body !== bodyArray[i]) {
+                    let tempVector = calculateGravitationalForce(body, bodyArray[i]);
+                    netForce.x += tempVector.x;
+                    netForce.y += tempVector.y;
+                    netForce.z += tempVector.z;
+                }
+            }
+            console.log('Net force:', netForce); 
+            return netForce;
+        }
+    
+        function calculateNewVelocity(body, netForce, deltaTime) {
+            var acceleration = {
+                x: netForce.x / body.mass,
+                y: netForce.y / body.mass,
+                z: netForce.z / body.mass
+            };
+            var newVelocity = {
+                x: body.velocity[0] + acceleration.x * deltaTime,
+                y: body.velocity[1] + acceleration.y * deltaTime,
+                z: body.velocity[2] + acceleration.z * deltaTime
+            };
+            console.log('New velocity:', newVelocity);
+            return [newVelocity.x, newVelocity.y, newVelocity.z];
+        }
+        
+        function calculateNewPosition(body, newVelocity, deltaTime) {
+            var newPosition = {
+                x: body.mesh.position.x + newVelocity[0] * deltaTime,
+                y: body.mesh.position.y + newVelocity[1] * deltaTime,
+                z: body.mesh.position.z + newVelocity[2] * deltaTime
+            };
+            console.log('New position:', newPosition);
+            return [newPosition.x, newPosition.y, newPosition.z];
+        }
+        
+        function physicsUpdate(deltaTime) {
+            for (let i = 0; i < bodies.length; i++) {
+                let netForce = calculateNetForce(bodies[i], bodies);
+                let newVelocity = calculateNewVelocity(bodies[i], netForce, deltaTime);
+                let newPosition = calculateNewPosition(bodies[i], newVelocity, deltaTime);
+            
+                bodies[i].velocity = newVelocity;
+                bodies[i].mesh.position.set(newPosition[0], newPosition[1], newPosition[2]);
+            }
+        }
+    
+        var cameraSpeed = 1; // Adjust the camera movement speed as needed
+    
+        // Event listener for keyboard arrow keys
+        document.addEventListener("keydown", function (event) {
+            var keyCode = event.keyCode;
+            switch (keyCode) {
+                case 37: // Left arrow key
+                    camera.position.x -= cameraSpeed;
+                    break;
+                case 38: // Up arrow key
+                    camera.position.y += cameraSpeed;
+                    break;
+                case 39: // Right arrow key
+                    camera.position.x += cameraSpeed;
+                    break;
+                case 40: // Down arrow key
+                    camera.position.y -= cameraSpeed;
+                    break;
+                case 87: // W key
+                    camera.position.z -= cameraSpeed;
+                    break;
+                case 83: // S key
+                    camera.position.z += cameraSpeed;
+                    break;2.
+            }
+        });
+    
+        function render() {
+            renderer.clear();
+            renderer.render(scene, camera);
+        }
+    
+        function mainUpdateLoop() {
+            let deltaTime = getSimulationSpeed();
+            physicsUpdate(deltaTime);
+            render();
+            console.log("Animation frame updated");
+            requestAnimationFrame(mainUpdateLoop);
+        }
+        mainUpdateLoop();
+    </script>
+    </body>
+    </html>
